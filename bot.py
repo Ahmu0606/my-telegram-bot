@@ -2,51 +2,43 @@ import os
 import logging
 import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# ለደህንነት ሲባል ቶከኑን ከሰርቨሩ እናነባለን
+# 1. ቶክን መቀበያ
 TOKEN = os.getenv('BOT_TOKEN')
 
-# ሎጊንግ (ስህተቶችን ለማየት)
+# 2. ሎጊንግ
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
-# የ /start ትዕዛዝ ሲሰጥ የሚመልሰው
+# 3. የ /start ትዕዛዝ
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name
     await context.bot.send_message(
         chat_id=update.effective_chat.id, 
-        text=f"ሰላም {user_name}! እንኳን ወደ አህመድ ታዋቂ ቦት በሰላም መጣህ። ይህ ቦት በሰርቨር ላይ 24/7 እየሰራ ነው። 🚀"
+        text=f"ሰላም {user_name}! እንኳን ወደ አህመድ ቦት በሰላም መጣህ።"
     )
 
-# የ /help ትዕዛዝ ሲሰጥ የሚመልሰው
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, 
-        text="እርዳታ ከፈለጉ ዋናውን ባለቤት አህመድን @Ahmu060 ብለው ያግኙት።"
-    )
+# 4. ዋናው የማስነሻ ክፍል
+async def main():
+    if not TOKEN:
+        print("ስህተት: BOT_TOKEN አልተገኘም!")
+        return
 
+    # እዚህ ጋር 'application' በትክክል ተለይቷል
+    application = ApplicationBuilder().token(TOKEN).build()
+    application.add_handler(CommandHandler('start', start))
+
+    await application.initialize()
+    await application.updater.start_polling()
+    
+    print("ቦቱ ስራ ጀምሯል...")
+    while True:
+        await asyncio.sleep(1)
 
 if __name__ == '__main__':
-    # ቦቱን ማዘጋጀት
-    application = ApplicationBuilder().token(TOKEN).build()
-    
-    # ትዕዛዞችን መመዝገብ
-    application.add_handler(CommandHandler('start', start))
-    application.add_handler(CommandHandler('help', help_command))
-
-    async def main():
-        # ቦቱን ለማስነሳት
-        await application.initialize()
-        await application.updater.start_polling()
-        # ቦቱ እንዳይጠፋ
-        while True:
-            await asyncio.sleep(1)
-
-    # ቦቱን ማስጀመር
-    import asyncio
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
