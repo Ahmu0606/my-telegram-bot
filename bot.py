@@ -28,25 +28,26 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text="እርዳታ ከፈለጉ ዋናውን ባለቤት አህመድን @Ahmu060 ብለው ያግኙት።"
     )
 
-if __name__ == '__main__':
-    if not TOKEN:
-        print("ስህተት፡ BOT_TOKEN አልተገኘም!")
-    else:
-        application = ApplicationBuilder().token(TOKEN).build()
-        
-        # ትዕዛዞችን መመዝገብ
-        application.add_handler(CommandHandler('start', start))
-        application.add_handler(CommandHandler('help', help_command))
-        
-        print("ቦቱ ስራ ጀምሯል...")
-        import asyncio
-
-async def main():
-    await updater.initialize()
-    await updater.start_polling()
-    while True:
-        await asyncio.sleep(1)
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    # ቦቱን ማዘጋጀት
+    application = ApplicationBuilder().token(TOKEN).build()
+    
+    # ትዕዛዞችን መመዝገብ
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('help', help_command))
 
+    async def main():
+        # ቦቱን ለማስነሳት
+        await application.initialize()
+        await application.updater.start_polling()
+        # ቦቱ እንዳይጠፋ
+        while True:
+            await asyncio.sleep(1)
+
+    # ቦቱን ማስጀመር
+    import asyncio
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        pass
