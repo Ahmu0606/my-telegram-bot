@@ -39,4 +39,14 @@ if __name__ == '__main__':
         application.add_handler(CommandHandler('help', help_command))
         
         print("ቦቱ ስራ ጀምሯል...")
-        application.run_polling()
+        import asyncio
+
+async def main():
+    await updater.initialize()
+    await updater.start_polling()
+    while True:
+        await asyncio.sleep(1)
+
+if __name__ == '__main__':
+    asyncio.run(main())
+
